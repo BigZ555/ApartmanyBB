@@ -18,14 +18,12 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
           try {
-            // First pass: update request cookies
             cookiesToSet.forEach(({ name, value }) => {
               request.cookies.set(name, value);
             });
 
             response = NextResponse.next({ request });
 
-            // Second pass: set response cookies
             cookiesToSet.forEach(({ name, value, options }) => {
               response.cookies.set(name, value, options);
             });
@@ -37,11 +35,14 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Protect admin routes
   const pathname = request.nextUrl.pathname;
-  if (pathname.startsWith("/admin")) {
+
+  // Protect admin routes BUT avoid infinite redirect loop
+  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
     const { data: { user } } = await supabase.auth.getUser();
+
     if (!user) {
+      // Only redirect to login if not already trying to log in
       return NextResponse.redirect(new URL("/admin", request.url));
     }
   }
