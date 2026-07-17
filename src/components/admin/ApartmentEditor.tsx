@@ -1,124 +1,150 @@
 "use client";
 
-import { useState } from "react";
-import type { ApartmentFull } from "@/types/database";
+import { useState, useEffect } from "react";
+import type { Apartment } from "@/types/database";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { createClient } from "@/lib/supabase/client";
-import { Save, CheckCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Save } from "lucide-react";
 
 interface ApartmentEditorProps {
-  apartment: ApartmentFull | null;
+  apartment: Apartment | null;
 }
 
 export default function ApartmentEditor({ apartment }: ApartmentEditorProps) {
   const { t } = useLanguage();
-  const router = useRouter();
-  const [form, setForm] = useState({
-    name: apartment?.name || "BB Apartmány",
-    city: apartment?.city || "",
-    address: apartment?.address || "",
-    description: apartment?.description || "",
-    google_maps: apartment?.google_maps || "",
-    email: apartment?.email || "",
-    phone: apartment?.phone || "",
+  const [data, setData] = useState({
+    name: "",
+    city: "",
+    address: "",
+    about_city_sk: "",
+    about_city_hu: "",
+    about_apartments_sk: "",
+    about_apartments_hu: "",
+    google_maps: "",
+    email: "",
+    phone: "",
   });
-  const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (apartment) {
+      setData({
+        name: apartment.name || "",
+        city: apartment.city || "",
+        address: apartment.address || "",
+        about_city_sk: apartment.about_city_sk || "",
+        about_city_hu: apartment.about_city_hu || "",
+        about_apartments_sk: apartment.about_apartments_sk || "",
+        about_apartments_hu: apartment.about_apartments_hu || "",
+        google_maps: apartment.google_maps || "",
+        email: apartment.email || "",
+        phone: apartment.phone || "",
+      });
+    }
+  }, [apartment]);
 
   const handleSave = async () => {
-    setStatus("saving");
+    setSaving(true);
     const supabase = createClient();
 
-    if (apartment?.id) {
-      await supabase.from("apartments").update(form).eq("id", apartment.id);
-    } else {
-      await supabase.from("apartments").insert(form);
-    }
+    await supabase
+      .from("apartments")
+      .update({
+        name: data.name,
+        city: data.city,
+        address: data.address,
+        about_city_sk: data.about_city_sk,
+        about_city_hu: data.about_city_hu,
+        about_apartments_sk: data.about_apartments_sk,
+        about_apartments_hu: data.about_apartments_hu,
+        google_maps: data.google_maps,
+        email: data.email,
+        phone: data.phone,
+      })
+      .eq("id", apartment?.id);
 
-    setStatus("saved");
-    router.refresh();
-    setTimeout(() => setStatus("idle"), 2000);
+    setSaving(false);
+    alert("Saved successfully!");
   };
 
-  const update = (field: string, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }));
-
   return (
-    <div className="space-y-4">
-      <div className="grid md:grid-cols-2 gap-4">
+    <div className="space-y-8">
+      {/* Basic Info */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="label">{t.admin.name}</label>
-          <input
-            className="input-field"
-            value={form.name}
-            onChange={(e) => update("name", e.target.value)}
-          />
+          <label className="label">Name</label>
+          <input className="input-field" value={data.name} onChange={(e) => setData({...data, name: e.target.value})} />
         </div>
         <div>
-          <label className="label">{t.admin.city}</label>
-          <input
-            className="input-field"
-            value={form.city}
-            onChange={(e) => update("city", e.target.value)}
-          />
+          <label className="label">City</label>
+          <input className="input-field" value={data.city} onChange={(e) => setData({...data, city: e.target.value})} />
         </div>
-        <div>
-          <label className="label">{t.admin.address}</label>
-          <input
-            className="input-field"
-            value={form.address}
-            onChange={(e) => update("address", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="label">{t.admin.phone}</label>
-          <input
-            className="input-field"
-            value={form.phone}
-            onChange={(e) => update("phone", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="label">{t.admin.contactEmail}</label>
-          <input
-            type="email"
-            className="input-field"
-            value={form.email}
-            onChange={(e) => update("email", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="label">{t.admin.googleMaps}</label>
-          <input
-            className="input-field"
-            value={form.google_maps}
-            onChange={(e) => update("google_maps", e.target.value)}
-            placeholder="https://www.google.com/maps/embed?pb=..."
-          />
-        </div>
-      </div>
-      <div>
-        <label className="label">{t.admin.description}</label>
-        <textarea
-          className="input-field resize-none"
-          rows={6}
-          value={form.description}
-          onChange={(e) => update("description", e.target.value)}
-        />
       </div>
 
-      <button onClick={handleSave} disabled={status === "saving"} className="btn-primary">
-        {status === "saved" ? (
-          <>
-            <CheckCircle className="w-4 h-4" />
-            {t.admin.saved}
-          </>
-        ) : (
-          <>
-            <Save className="w-4 h-4" />
-            {status === "saving" ? t.admin.saving : t.admin.save}
-          </>
-        )}
+      <div>
+        <label className="label">Address</label>
+        <input className="input-field" value={data.address} onChange={(e) => setData({...data, address: e.target.value})} />
+      </div>
+
+      {/* About City */}
+      <div className="border-t pt-6">
+        <h3 className="font-semibold text-lg mb-4">About City (About City Section)</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="label">About City - Slovak</label>
+            <textarea 
+              className="input-field resize-none" 
+              rows={5}
+              value={data.about_city_sk}
+              onChange={(e) => setData({...data, about_city_sk: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="label">About City - Hungarian</label>
+            <textarea 
+              className="input-field resize-none" 
+              rows={5}
+              value={data.about_city_hu}
+              onChange={(e) => setData({...data, about_city_hu: e.target.value})}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* About Apartments */}
+      <div className="border-t pt-6">
+        <h3 className="font-semibold text-lg mb-4">About Apartments (Main Description)</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="label">About Apartments - Slovak</label>
+            <textarea 
+              className="input-field resize-none" 
+              rows={5}
+              value={data.about_apartments_sk}
+              onChange={(e) => setData({...data, about_apartments_sk: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="label">About Apartments - Hungarian</label>
+            <textarea 
+              className="input-field resize-none" 
+              rows={5}
+              value={data.about_apartments_hu}
+              onChange={(e) => setData({...data, about_apartments_hu: e.target.value})}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Other fields */}
+      <div className="border-t pt-6">
+        <label className="label">Google Maps Embed URL</label>
+        <input className="input-field" value={data.google_maps} onChange={(e) => setData({...data, google_maps: e.target.value})} />
+      </div>
+
+      <button onClick={handleSave} disabled={saving} className="btn-primary flex items-center gap-2">
+        <Save className="w-4 h-4" />
+        {saving ? "Saving..." : "Save Changes"}
       </button>
     </div>
   );

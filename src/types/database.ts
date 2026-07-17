@@ -15,9 +15,12 @@ export interface Apartment {
 export interface Room {
   id: string;
   apartment_id: string;
-  name: string;
-  description: string;
+  name_sk?: string;
+  name_hu?: string;
+  description_sk?: string;
+  description_hu?: string;
   capacity: number;
+  // name and description can be removed later
 }
 
 export interface Image {
