@@ -18,12 +18,14 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>) {
           try {
-            cookiesToSet.forEach(({ name, value }) => {   // removed unused options here
+            // First pass: update request cookies
+            cookiesToSet.forEach(({ name, value }) => {
               request.cookies.set(name, value);
             });
-            response = NextResponse.next({
-              request,
-            });
+
+            response = NextResponse.next({ request });
+
+            // Second pass: set response cookies
             cookiesToSet.forEach(({ name, value, options }) => {
               response.cookies.set(name, value, options);
             });
@@ -35,7 +37,7 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Protect admin route
+  // Protect admin routes
   const pathname = request.nextUrl.pathname;
   if (pathname.startsWith("/admin")) {
     const { data: { user } } = await supabase.auth.getUser();
