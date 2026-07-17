@@ -3,9 +3,8 @@
 import type { ApartmentFull } from "@/types/database";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import PhotoGallery from "@/components/PhotoGallery";
-import ContactForm from "@/components/ContactForm";
 import Image from "next/image";
-import { MapPin, Mail, Phone, Users } from "lucide-react";
+import { MapPin, Users } from "lucide-react";
 
 interface ApartmentsContentProps {
   apartment: ApartmentFull | null;
@@ -31,7 +30,7 @@ export default function ApartmentsContent({ apartment }: ApartmentsContentProps)
 
   const cityImages = apartment.images.filter((img) => img.category === "city");
   const apartmentImages = apartment.images.filter((img) => img.category === "apartment");
-  const sharedImages = apartment.images.filter((img) => img.category === "shared");
+
 
   return (
     <div>

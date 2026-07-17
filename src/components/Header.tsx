@@ -11,7 +11,7 @@ export default function Header() {
   const { locale, setLocale, t } = useLanguage();
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();

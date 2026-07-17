@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { RoomWithPrices, Price } from "@/types/database";
+import type { RoomWithPrices} from "@/types/database";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { createClient } from "@/lib/supabase/client";
 import { Plus, Trash2, Save } from "lucide-react";
