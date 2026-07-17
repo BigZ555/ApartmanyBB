@@ -20,12 +20,13 @@ export interface Apartment {
 export interface Room {
   id: string;
   apartment_id: string;
+  name?: string;           // keep for backward compatibility
+  description?: string;    // keep for backward compatibility
   name_sk?: string;
   name_hu?: string;
   description_sk?: string;
   description_hu?: string;
   capacity: number;
-  // name and description can be removed later
 }
 
 export interface Image {

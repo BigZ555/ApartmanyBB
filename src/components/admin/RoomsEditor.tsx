@@ -31,8 +31,8 @@ export default function RoomsEditor({ apartmentId, rooms: initialRooms }: RoomsE
     const supabase = createClient();
 
     const payload = {
-      name: form.name_sk || form.name_hu || "Unnamed Room",           // backward compatibility
-      description: form.description_sk || form.description_hu || "", // backward compatibility
+      name: form.name_sk || form.name_hu || "Unnamed Room",
+      description: form.description_sk || form.description_hu || "",
       name_sk: form.name_sk.trim(),
       name_hu: form.name_hu.trim(),
       description_sk: form.description_sk.trim(),
@@ -57,7 +57,7 @@ export default function RoomsEditor({ apartmentId, rooms: initialRooms }: RoomsE
           .single();
       }
 
-      if (result.error) {
+      if (result?.error) {
         console.error("Supabase error:", result.error);
         throw result.error;
       }
@@ -72,7 +72,7 @@ export default function RoomsEditor({ apartmentId, rooms: initialRooms }: RoomsE
       alert("✅ Room saved successfully!");
     } catch (error: any) {
       console.error("Full error:", error);
-      alert("Failed to save: " + (error.message || error.details || "Check console"));
+      alert("Failed to save room: " + (error.message || "Unknown error"));
     }
   };
 

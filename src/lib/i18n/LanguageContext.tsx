@@ -33,7 +33,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("locale", newLocale);
   };
 
-  const t = getTranslations(locale);
+  const t = getTranslations(locale) as TranslationKey;
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, t }}>

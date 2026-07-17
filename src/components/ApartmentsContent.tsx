@@ -109,7 +109,7 @@ export default function ApartmentsContent({ apartment }: ApartmentsContentProps)
                   <div className="aspect-video relative">
                     <Image
                       src={room.images[0].url}
-                      alt={roomName}
+                      alt={roomName || "Room"}
                       fill
                       className="object-cover"
                       sizes="400px"

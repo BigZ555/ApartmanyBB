@@ -66,7 +66,13 @@ export default function ImagesEditor({
         {images.map((img) => (
           <div key={img.id} className="relative group border border-gray-200 rounded-lg overflow-hidden">
             <div className="aspect-video relative bg-gray-100">
-              <ImagePreview src={img.url} alt="" fill className="object-cover" sizes="300px" />
+              <ImagePreview 
+                src={img.url} 
+                alt="" 
+                fill 
+                className="object-cover" 
+                sizes="300px" 
+              />
             </div>
             <div className="p-3 flex items-center justify-between">
               <span className="text-xs font-medium text-gray-500 uppercase">
@@ -91,7 +97,7 @@ export default function ImagesEditor({
               className="input-field"
               value={form.url}
               onChange={(e) => setForm({ ...form, url: e.target.value })}
-              placeholder="https://..."
+              placeholder="https://drive.google.com/uc?id=..."
             />
             <p className="text-xs text-gray-500 mt-1">{t.admin.uploadHint}</p>
           </div>
@@ -120,11 +126,14 @@ export default function ImagesEditor({
                 onChange={(e) => setForm({ ...form, room_id: e.target.value })}
               >
                 <option value="">--</option>
-                {rooms.map((room) => (
-                  <option key={room.id} value={room.id}>
-                    {room.name}
-                  </option>
-                ))}
+                {rooms.map((room) => {
+                  const roomName = room.name_sk || room.name_hu || room.name || "Unnamed Room";
+                  return (
+                    <option key={room.id} value={room.id}>
+                      {roomName}
+                    </option>
+                  );
+                })}
               </select>
             </div>
           )}

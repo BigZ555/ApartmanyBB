@@ -14,11 +14,16 @@ interface PricesEditorProps {
 export default function PricesEditor({ rooms }: PricesEditorProps) {
   const { t } = useLanguage();
   const router = useRouter();
+
   const [prices, setPrices] = useState(
     rooms.flatMap((room) =>
-      room.prices.map((p) => ({ ...p, roomName: room.name }))
+      room.prices.map((p) => ({ 
+        ...p, 
+        roomName: room.name_sk || room.name_hu || room.name || "Unnamed Room" 
+      }))
     )
   );
+
   const [isAdding, setIsAdding] = useState(false);
   const [form, setForm] = useState({
     room_id: rooms[0]?.id || "",
@@ -43,7 +48,8 @@ export default function PricesEditor({ rooms }: PricesEditorProps) {
       .single();
 
     if (data) {
-      const roomName = rooms.find((r) => r.id === form.room_id)?.name || "";
+      const room = rooms.find((r) => r.id === form.room_id);
+      const roomName = room?.name_sk || room?.name_hu || room?.name || "Unnamed Room";
       setPrices([...prices, { ...data, roomName }]);
     }
 
@@ -113,11 +119,14 @@ export default function PricesEditor({ rooms }: PricesEditorProps) {
               value={form.room_id}
               onChange={(e) => setForm({ ...form, room_id: e.target.value })}
             >
-              {rooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {room.name}
-                </option>
-              ))}
+              {rooms.map((room) => {
+                const roomName = room.name_sk || room.name_hu || room.name || "Unnamed Room";
+                return (
+                  <option key={room.id} value={room.id}>
+                    {roomName}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div className="grid grid-cols-3 gap-3">
