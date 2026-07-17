@@ -4,9 +4,18 @@ import { NextResponse } from "next/server";
 import type { CookieOptions } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request,
-  });
+  const pathname = request.nextUrl.pathname;
+
+  // Skip middleware for static files and API routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.includes(".")
+  ) {
+    return NextResponse.next();
+  }
+
+  let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,22 +37,25 @@ export async function middleware(request: NextRequest) {
               response.cookies.set(name, value, options);
             });
           } catch {
-            // Ignore error
+            // Ignore
           }
         },
       },
     }
   );
 
-  const pathname = request.nextUrl.pathname;
-
-  // Protect admin routes BUT avoid infinite redirect loop
-  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
+  // Admin protection
+  if (pathname.startsWith("/admin")) {
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      // Only redirect to login if not already trying to log in
+    // If not logged in and not on the login page itself → redirect to login
+    if (!user && pathname !== "/admin") {
       return NextResponse.redirect(new URL("/admin", request.url));
+    }
+
+    // If logged in and on login page → redirect to dashboard
+    if (user && pathname === "/admin") {
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
   }
 
@@ -53,6 +65,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/admin/:path*",
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
