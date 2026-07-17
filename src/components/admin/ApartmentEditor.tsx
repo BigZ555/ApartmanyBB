@@ -12,19 +12,20 @@ interface ApartmentEditorProps {
 
 export default function ApartmentEditor({ apartment }: ApartmentEditorProps) {
   const { t } = useLanguage();
-  const [data, setData] = useState({
-    name: "",
-    city: "",
-    address: "",
-    about_city_sk: "",
-    about_city_hu: "",
-    about_apartments_sk: "",
-    about_apartments_hu: "",
-    google_maps: "",
-    email: "",
-    phone: "",
-  });
-  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+  name: apartment?.name || "BB Apartmány",
+  city: apartment?.city || "",
+  address: apartment?.address || "",
+  description: apartment?.description || "",
+  google_maps: apartment?.google_maps || "",
+  email: apartment?.email || "",
+  phone: apartment?.phone || "",
+  // Bilingual fields
+  about_city_sk: apartment?.about_city_sk || "",
+  about_city_hu: apartment?.about_city_hu || "",
+  about_apartments_sk: apartment?.about_apartments_sk || "",
+  about_apartments_hu: apartment?.about_apartments_hu || "",
+});
 
   useEffect(() => {
     if (apartment) {

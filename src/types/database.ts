@@ -9,6 +9,11 @@ export interface Apartment {
   google_maps: string;
   email: string;
   phone: string;
+  // Bilingual fields
+  about_city_sk?: string;
+  about_city_hu?: string;
+  about_apartments_sk?: string;
+  about_apartments_hu?: string;
   created_at: string;
 }
 
