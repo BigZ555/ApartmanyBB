@@ -11,12 +11,10 @@ export default function Header() {
   const { locale, setLocale, t } = useLanguage();
   const pathname = usePathname();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [_isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
       if (user) {
         supabase
           .from("profiles")
@@ -26,6 +24,8 @@ export default function Header() {
           .then(({ data }) =>
             setIsAdmin(data?.role?.trim().toLowerCase() === "admin")
           );
+      } else {
+        setIsAdmin(false);
       }
     });
   }, [pathname]);
@@ -33,7 +33,6 @@ export default function Header() {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    setIsLoggedIn(false);
     setIsAdmin(false);
     window.location.href = "/";
   };
